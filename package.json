@@ -1,0 +1,15 @@
+{
+  "name": "backpack-college",
+  "version": "1.0.0",
+  "description": "Server first practice",
+  "author": "Mohammad Honarvar",
+  "main": "index.js",
+  "type": "module",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "set DEBUG=app/* && node index.js"
+  },
+  "dependencies": {
+    "debug": "^4.3.1"
+  }
+}

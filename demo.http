@@ -1,0 +1,21 @@
+@baseUrl = http://localhost:3000
+
+###
+# Invalid URI
+GET {{baseUrl}}/x
+
+###
+# /user => method: GET
+GET {{baseUrl}}/user
+
+###
+# /user => method: POST
+POST {{baseUrl}}/user
+
+###
+# /user => method: PUT
+PUT {{baseUrl}}/user
+
+###
+# /user => method: DELETE
+DELETE {{baseUrl}}/user
