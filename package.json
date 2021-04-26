@@ -7,9 +7,44 @@
   "type": "module",
   "license": "UNLICENSED",
   "scripts": {
-    "start": "set DEBUG=app/* && node index.js"
+    "start": "set DEBUG=app/* && node index.js",
+    "wn": "yarn watch-node",
+    "watch-node": "nodemon --watch index.js"
   },
   "dependencies": {
-    "debug": "^4.3.1"
+    "debug": "^4.3.1",
+    "mysql2": "^2.2.5"
+  },
+  "devDependencies": {
+    "eslint": "^7.25.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^5.0.0",
+    "eslint-plugin-unicorn": "^27.0.0",
+    "nodemon": "^2.0.7",
+    "prettier": "^2.2.1"
+  },
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 2020,
+      "sourceType": "module"
+    },
+    "extends": [
+      "eslint-config-prettier",
+      "plugin:prettier/recommended"
+    ]
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "printWidth": 110,
+    "tabWidth": 2,
+    "endOfLine": "auto"
   }
 }
