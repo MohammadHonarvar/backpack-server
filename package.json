@@ -9,10 +9,12 @@
   "scripts": {
     "start": "set DEBUG=app/* && node index.js",
     "wn": "yarn watch-node",
-    "watch-node": "nodemon --watch index.js"
+    "watch-node": "nodemon --watch src"
   },
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "debug": "^4.3.1",
+    "dotenv": "^8.2.0",
     "mysql2": "^2.2.5"
   },
   "devDependencies": {
