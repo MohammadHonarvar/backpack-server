@@ -1,3 +1,3 @@
 import debug from 'debug';
-debug.enable('app/*');
+debug.enable(process.env.DEBUG || 'app/*');
 export { debug };
