@@ -13,9 +13,13 @@ import { URL } from 'url';
 import { responseEnd } from './common/response-end.js';
 import { userSignUpHandler } from './request-handlers/user/sign-up.js';
 import { userLoginHandler } from './request-handlers/user/login.js';
-import { responseError } from './common/response-error.js';
+import { errorHandler } from './common/error-handler.js';
 
-const baseUrl = 'http://localhost:3000';
+let baseUrl = process.env.BASE_URL;
+if (baseUrl === 'http://localhost') {
+  baseUrl = `${baseUrl}:${process.env.PORT}`;
+}
+
 const requestListener = async (request, response) => {
   /**
    * I used a global `try/catch` to handle any error in nested codes
@@ -32,7 +36,7 @@ const requestListener = async (request, response) => {
         break;
 
       case '/login':
-        userLoginHandler(request, response);
+        await userLoginHandler(request, response);
         break;
 
       default:
@@ -44,9 +48,9 @@ const requestListener = async (request, response) => {
     }
   } catch (error) {
     log(error);
-    responseError(response, error);
+    errorHandler(response, error);
   }
 };
 
 createServer(requestListener).listen(parseInt(process.env.PORT), process.env.HOST);
-log(`Listen ${process.env.HOST}:${process.env.PORT}`);
+log(`Listen ${baseUrl}`);
