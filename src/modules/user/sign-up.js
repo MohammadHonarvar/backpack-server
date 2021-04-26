@@ -31,7 +31,6 @@ export const signUp = async (optionList) => {
     dbConnection = await mysqlConnection();
   } catch (error) {
     log(error);
-
     throw {
       ok: false,
       errorCode: 105,
@@ -40,10 +39,12 @@ export const signUp = async (optionList) => {
   }
 
   const userSql = 'SELECT id FROM users WHERE email = ?';
-  let [rows, fields] = await dbConnection.execute(userSql, [optionList.email]);
-  log('result: %o', { rows, fields });
+  let [rows] = await dbConnection.execute(userSql, [optionList.email]);
+  log('result: %o', { rows });
 
   if (rows[0] != null) {
+    dbConnection.end();
+
     throw {
       ok: false,
       errorCode: 106,
@@ -53,8 +54,10 @@ export const signUp = async (optionList) => {
 
   const hashedPassword = await hash(optionList.password, 9);
   const insertUserSql = `INSERT INTO users (email, password) VALUES ('${optionList.email}', '${hashedPassword}')`;
-  [rows, fields] = await dbConnection.execute(insertUserSql);
-  log('Insert result: %o', { rows, fields });
+  [rows] = await dbConnection.execute(insertUserSql);
+  log('Insert result: %o', { rows });
+
+  dbConnection.end();
 
   if (!rows['insertId']) {
     throw {

@@ -7,10 +7,10 @@ import { responseEnd } from '../../common/response-end.js';
 
 export const userSignUpHandler = async (request, response) => {
   if (request.method !== 'POST') {
-    return responseEnd(response, 400, {
-      ok: false,
+    throw {
+      type: 'BAD_REQUEST',
       description: 'Invalid request',
-    });
+    };
   }
 
   const body = await bodyParser(request);
