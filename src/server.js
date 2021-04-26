@@ -13,9 +13,10 @@ import { URL } from 'url';
 import { responseEnd } from './common/response-end.js';
 import { userSignUpHandler } from './request-handlers/user/sign-up.js';
 import { userLoginHandler } from './request-handlers/user/login.js';
+import { responseError } from './common/response-error.js';
 
 const baseUrl = 'http://localhost:3000';
-const requestListener = (request, response) => {
+const requestListener = async (request, response) => {
   /**
    * I used a global `try/catch` to handle any error in nested codes
    */
@@ -23,10 +24,11 @@ const requestListener = (request, response) => {
     // `URL` imported from `url` package
     const url = new URL(request.url, baseUrl);
     log('Requested URI details: %o', url);
+    url.pathname = url.pathname?.replace('/v1', '');
 
     switch (url.pathname) {
       case '/sign-up':
-        userSignUpHandler(request, response);
+        await userSignUpHandler(request, response);
         break;
 
       case '/login':
@@ -42,9 +44,9 @@ const requestListener = (request, response) => {
     }
   } catch (error) {
     log(error);
-    responseEnd(response, 500, 'Something went wrong, try again later');
+    responseError(response, error);
   }
 };
 
-createServer(requestListener).listen(3000);
-log(`The server listening to port: ${3000}`);
+createServer(requestListener).listen(parseInt(process.env.PORT), process.env.HOST);
+log(`Listen ${process.env.HOST}:${process.env.PORT}`);
