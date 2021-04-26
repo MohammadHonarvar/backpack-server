@@ -19,9 +19,7 @@ export const bodyParser = async (request) => {
 
   await new Promise((resolve) => request.on('end', resolve));
 
-  const contentType = String(request.headers['content-type'])
-    .toLowerCase()
-    .trim();
+  const contentType = String(request.headers['content-type']).toLowerCase().trim();
 
   log('Body as %s: %o', contentType, body);
 
