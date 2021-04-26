@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:3000
+@baseUrl = http://localhost:7000
 
 ###
 # Invalid URI
@@ -6,16 +6,20 @@ GET {{baseUrl}}/x
 
 ###
 # /user => method: GET
-GET {{baseUrl}}/user
+POST {{baseUrl}}/v1/sign-up
+Content-Type: application/json
+
+{
+  "email": "mhf@123",
+  "password": "Mhf2021$"
+}
 
 ###
-# /user => method: POST
-POST {{baseUrl}}/user
+# /user => method: GET
+POST {{baseUrl}}/v1/login
+Content-Type: application/json
 
-###
-# /user => method: PUT
-PUT {{baseUrl}}/user
-
-###
-# /user => method: DELETE
-DELETE {{baseUrl}}/user
+{
+  "email": "mhf@123",
+  "password": "Mhf2021$"
+}
