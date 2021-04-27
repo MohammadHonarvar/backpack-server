@@ -6,7 +6,7 @@ import { signUp } from '../../modules/user/sign-up.js';
 import { responseEnd } from '../../common/response-end.js';
 
 export const userSignUpHandler = async (request, response) => {
-  if (request.method !== 'POST') {
+  if (request.method !== 'PUT') {
     throw {
       type: 'BAD_REQUEST',
       description: 'Invalid request',
