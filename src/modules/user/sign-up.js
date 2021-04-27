@@ -26,9 +26,41 @@ export const signUp = async (optionList) => {
     };
   }
 
-  let dbConnection = null;
   try {
-    dbConnection = await mysqlConnection();
+    const dbConnection = await mysqlConnection();
+    const userSql = 'SELECT id FROM users WHERE email = ?';
+    let [rows] = await dbConnection.execute(userSql, [optionList.email]);
+    log('result: %o', { rows });
+
+    if (rows[0] != null) {
+      dbConnection.end();
+
+      throw {
+        ok: false,
+        errorCode: 106,
+        description: 'Duplicate user email',
+      };
+    }
+
+    const hashedPassword = await hash(optionList.password, 9);
+    const insertUserSql = `INSERT INTO users (email, password) VALUES ('${optionList.email}', '${hashedPassword}')`;
+    [rows] = await dbConnection.execute(insertUserSql);
+    log('Insert result: %o', { rows });
+
+    dbConnection.end();
+
+    if (!rows['insertId']) {
+      throw {
+        ok: false,
+        errorCode: 107,
+        description: 'Registering failed',
+      };
+    }
+
+    return {
+      ok: true,
+      description: 'The user registered',
+    };
   } catch (error) {
     log(error);
     throw {
@@ -37,38 +69,4 @@ export const signUp = async (optionList) => {
       description: 'DB connection error',
     };
   }
-
-  const userSql = 'SELECT id FROM users WHERE email = ?';
-  let [rows] = await dbConnection.execute(userSql, [optionList.email]);
-  log('result: %o', { rows });
-
-  if (rows[0] != null) {
-    dbConnection.end();
-
-    throw {
-      ok: false,
-      errorCode: 106,
-      description: 'Duplicate user email',
-    };
-  }
-
-  const hashedPassword = await hash(optionList.password, 9);
-  const insertUserSql = `INSERT INTO users (email, password) VALUES ('${optionList.email}', '${hashedPassword}')`;
-  [rows] = await dbConnection.execute(insertUserSql);
-  log('Insert result: %o', { rows });
-
-  dbConnection.end();
-
-  if (!rows['insertId']) {
-    throw {
-      ok: false,
-      errorCode: 107,
-      description: 'Registering failed',
-    };
-  }
-
-  return {
-    ok: true,
-    description: 'The user registered',
-  };
 };

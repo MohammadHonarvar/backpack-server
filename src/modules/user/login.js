@@ -27,9 +27,38 @@ export const login = async (optionList) => {
     };
   }
 
-  let dbConnection = null;
   try {
-    dbConnection = await mysqlConnection();
+    const dbConnection = await mysqlConnection();
+    const userSql = 'SELECT * FROM users WHERE email = ?';
+    const [rows] = await dbConnection.execute(userSql, [optionList.email]);
+    log('result: %o', { rows });
+    dbConnection.end();
+
+    const user = rows[0];
+    if (user == null) {
+      throw {
+        type: 'UNAUTHORIZED',
+        description: 'Invalid user credentials',
+      };
+    }
+
+    const validPassword = await compare(optionList.password, user.password);
+    if (!validPassword) {
+      throw {
+        type: 'UNAUTHORIZED',
+        description: 'Invalid user credentials',
+      };
+    }
+
+    const userToken = jsonwebtoken.sign({ userId: user.id, email: user.email }, `${process.env.JWT_KEY}`);
+
+    return {
+      ok: true,
+      description: 'Successful login process',
+      data: {
+        token: userToken,
+      },
+    };
   } catch (error) {
     log(error);
     throw {
@@ -38,35 +67,4 @@ export const login = async (optionList) => {
       description: 'DB connection error',
     };
   }
-
-  const userSql = 'SELECT * FROM users WHERE email = ?';
-  const [rows] = await dbConnection.execute(userSql, [optionList.email]);
-  log('result: %o', { rows });
-  dbConnection.end();
-
-  const user = rows[0];
-  if (user == null) {
-    throw {
-      type: 'UNAUTHORIZED',
-      description: 'Invalid user credentials',
-    };
-  }
-
-  const validPassword = await compare(optionList.password, user.password);
-  if (!validPassword) {
-    throw {
-      type: 'UNAUTHORIZED',
-      description: 'Invalid user credentials',
-    };
-  }
-
-  const userToken = jsonwebtoken.sign({ userId: user.id, email: user.email }, `${process.env.JWT_KEY}`);
-
-  return {
-    ok: true,
-    description: 'Successful login process',
-    data: {
-      token: userToken,
-    },
-  };
 };
