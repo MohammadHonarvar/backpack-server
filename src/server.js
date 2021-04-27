@@ -31,11 +31,11 @@ const requestListener = async (request, response) => {
     url.pathname = url.pathname?.replace('/v1', '');
 
     switch (url.pathname) {
-      case '/sign-up':
+      case '/user/sign-up':
         await userSignUpHandler(request, response);
         break;
 
-      case '/login':
+      case '/user/login':
         await userLoginHandler(request, response);
         break;
 
