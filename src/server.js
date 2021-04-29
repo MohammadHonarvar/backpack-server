@@ -10,10 +10,16 @@ import { URL } from 'url';
 /**
  * Custom codes
  */
+import { connection as dbConnection } from './modules/mysql-connection.js';
 import { responseEnd } from './common/response-end.js';
 import { userSignUpHandler } from './request-handlers/user/sign-up.js';
 import { userLoginHandler } from './request-handlers/user/login.js';
 import { errorHandler } from './common/error-handler.js';
+
+if (dbConnection == null) {
+  log('DB Error');
+  process.kill();
+}
 
 let baseUrl = process.env.BASE_URL;
 if (baseUrl === 'http://localhost') {

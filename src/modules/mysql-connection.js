@@ -10,13 +10,12 @@ export const mysqlConfig = {
   database: process.env.DATABASE_NAME,
 };
 
-export async function mysqlConnection() {
-  try {
-    const connection = await createConnection(mysqlConfig);
-    log('DB connection: %s', connection.threadId);
-    return connection;
-  } catch (error) {
-    log(error);
-    return null;
-  }
+let connection = null;
+try {
+  connection = await createConnection(mysqlConfig);
+  log('DB connection: %s', connection.threadId);
+} catch (error) {
+  log(error);
 }
+
+export { connection };

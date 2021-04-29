@@ -3,7 +3,7 @@ const log = debug('app/modules/user/login');
 
 import { compare } from 'bcrypt';
 import jsonwebtoken from 'jsonwebtoken';
-import { mysqlConnection } from '../mysql-connection.js';
+import { connection as dbConnection } from '../mysql-connection.js';
 import { validateEmail } from '../../common/validate-email.js';
 import { validatePasswordFormat } from '../../common/validate-password-format.js';
 
@@ -27,44 +27,33 @@ export const login = async (optionList) => {
     };
   }
 
-  try {
-    const dbConnection = await mysqlConnection();
-    const userSql = 'SELECT * FROM users WHERE email = ?';
-    const [rows] = await dbConnection.execute(userSql, [optionList.email]);
-    log('result: %o', { rows });
-    dbConnection.end();
+  const userSql = 'SELECT * FROM users WHERE email = ?';
+  const [rows] = await dbConnection.execute(userSql, [optionList.email]);
+  log('result: %o', { rows });
 
-    const user = rows[0];
-    if (user == null) {
-      throw {
-        type: 'UNAUTHORIZED',
-        description: 'Invalid user credentials',
-      };
-    }
-
-    const validPassword = await compare(optionList.password, user.password);
-    if (!validPassword) {
-      throw {
-        type: 'UNAUTHORIZED',
-        description: 'Invalid user credentials',
-      };
-    }
-
-    const userToken = jsonwebtoken.sign({ userId: user.id, email: user.email }, `${process.env.JWT_KEY}`);
-
-    return {
-      ok: true,
-      description: 'Successful login process',
-      data: {
-        token: userToken,
-      },
-    };
-  } catch (error) {
-    log(error);
+  const user = rows[0];
+  if (user == null) {
     throw {
-      ok: false,
-      errorCode: 105,
-      description: 'DB connection error',
+      type: 'UNAUTHORIZED',
+      description: 'Invalid user credentials',
     };
   }
+
+  const validPassword = await compare(optionList.password, user.password);
+  if (!validPassword) {
+    throw {
+      type: 'UNAUTHORIZED',
+      description: 'Invalid user credentials',
+    };
+  }
+
+  const userToken = jsonwebtoken.sign({ userId: user.id, email: user.email }, `${process.env.JWT_KEY}`);
+
+  return {
+    ok: true,
+    description: 'Successful login process',
+    data: {
+      token: userToken,
+    },
+  };
 };
